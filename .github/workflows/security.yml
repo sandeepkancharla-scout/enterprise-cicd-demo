@@ -9,6 +9,8 @@ on:
     branches:
       - main
 
+  workflow_dispatch:
+
 jobs:
   trivy-scan:
 
@@ -25,3 +27,19 @@ jobs:
         with:
           scan-type: fs
           scan-ref: .
+          format: table
+          output: trivy-report.txt
+          exit-code: "0"
+
+      - name: Display Report
+
+        run: |
+          cat trivy-report.txt
+
+      - name: Upload Trivy Report
+
+        uses: actions/upload-artifact@v4
+
+        with:
+          name: trivy-report
+          path: trivy-report.txt
