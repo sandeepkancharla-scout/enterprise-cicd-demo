@@ -1,14 +1,13 @@
 name: Deployment Pipeline
 
 on:
-
   workflow_dispatch:
 
     inputs:
 
       environment:
 
-        description: "Select deployment environment"
+        description: "Select Environment"
 
         required: true
 
@@ -31,27 +30,30 @@ jobs:
     steps:
 
       - name: Checkout Code
-
         uses: actions/checkout@v4
 
-      - name: Display Deployment Details
+      - name: Show Deployment Information
 
         run: |
-          echo "Deploying to ${{ inputs.environment }}"
-          echo "Application URL: ${{ secrets.APP_URL }}"
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Application URL: ${{ vars.APP_URL }}"
 
       - name: Create Deployment Report
 
         run: |
           mkdir reports
-          echo "Environment: ${{ inputs.environment }}" > reports/deployment-report.txt
-          echo "Deployment Status: Successful" >> reports/deployment-report.txt
 
-      - name: Upload Report
+          echo "Deployment Pipeline" > reports/deployment-report.txt
+          echo "Environment: ${{ inputs.environment }}" >> reports/deployment-report.txt
+          echo "Application URL: ${{ vars.APP_URL }}" >> reports/deployment-report.txt
+          echo "Commit: ${{ github.sha }}" >> reports/deployment-report.txt
+          echo "Triggered By: ${{ github.actor }}" >> reports/deployment-report.txt
+
+      - name: Upload Deployment Report
 
         uses: actions/upload-artifact@v4
 
         with:
-          name: deployment-report
+          name: deployment-report-${{ inputs.environment }}
 
-          path: reports/
+          path: reports/deployment-report.txt
