@@ -1,0 +1,57 @@
+name: Deployment Pipeline
+
+on:
+
+  workflow_dispatch:
+
+    inputs:
+
+      environment:
+
+        description: "Select deployment environment"
+
+        required: true
+
+        type: choice
+
+        options:
+          - dev
+          - staging
+          - prod
+
+jobs:
+
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ inputs.environment }}
+
+    steps:
+
+      - name: Checkout Code
+
+        uses: actions/checkout@v4
+
+      - name: Display Deployment Details
+
+        run: |
+          echo "Deploying to ${{ inputs.environment }}"
+          echo "Application URL: ${{ secrets.APP_URL }}"
+
+      - name: Create Deployment Report
+
+        run: |
+          mkdir reports
+          echo "Environment: ${{ inputs.environment }}" > reports/deployment-report.txt
+          echo "Deployment Status: Successful" >> reports/deployment-report.txt
+
+      - name: Upload Report
+
+        uses: actions/upload-artifact@v4
+
+        with:
+          name: deployment-report
+
+          path: reports/
